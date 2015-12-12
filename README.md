@@ -7,7 +7,7 @@
 
 ## 使用方法
 
-#### 1. 引入API-requestor.js
+#### 1. 引入API-requestor.js
 `<script src="API-requestor.js"></script>`
 
 #### 2.配置信息
