@@ -43,13 +43,24 @@ function APIrequestor(apiOpt){
 
 
         // json to string {name: 'lisi', age: 10} --> name=lisi&age=10
-        json2String : function(jsonData) {
-            var strArr = [];
-            for(var k in jsonData) {
-                strArr.push(k + "=" + jsonData[k]);
+        json2String : function(obj) {
+            var msg;
+            for(var item in obj){
+                var value = obj[item]
+                if(this.isArray(value)){
+                    item = item + '[]'
+                    var len = value.length
+                    for(var i = len - 1; i >= 0; i--){
+                        var data = data ? data + '&' + item + '=' + value[i] : item + '=' + value[i]
+                    }
+                }else{
+                    var datas = item + '=' + value
+                }
+                var Data = data || datas
+                msg = msg ? msg + '&' + Data : Data
+                data = null
             }
-
-            return strArr.join("&");
+            return msg
         },
 
 
@@ -78,21 +89,21 @@ function APIrequestor(apiOpt){
             return xmlhttp;
         },
 
-        // 发送http 请求
+        // 发送http 请求  opt = {url:'',data:''}
         ajax : function(opt) {
-            this.xmlhttp = utils.init()
+            this.xmlhttp = this.init()
             var _self = this,
-                isTimeout = false,
-                options = {
-                    url : "",   // string
-                    data : "",  // json or string
-                    method : "POST",
-                    receiveType : "html",  // html json or xml
-                    timeout : 7000,
-                    async : true,
-                    success : function(){alert("define your success function");},
-                    error : function(xmlhttp){}
-                };
+            isTimeout = false,
+            options = {
+                url : "",   // string
+                data : "",  // json or string
+                method : "POST",
+                receiveType : "html",  // html json or xml
+                timeout : 7000,
+                async : true,
+                success : function(){},
+                error : function(xmlhttp){}
+            };
             if("data" in opt) {
                 if(typeof opt.data == "string"){} else {opt.data = this.json2String(opt.data); }
             }
@@ -128,7 +139,6 @@ function APIrequestor(apiOpt){
 
             this.xmlhttp.open(options.method.toUpperCase(), options.url, options.async);  //打开与服务器连接
             if(options.method.toUpperCase() == "POST") {
-                this.xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');  //post方式要设置请求类型
                 this.xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');  //post方式要设置请求类型
                 this.xmlhttp.send(options.data);  //发送内容到服务器
 
